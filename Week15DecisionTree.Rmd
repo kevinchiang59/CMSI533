@@ -1,0 +1,39 @@
+---
+title: "Week15DecisionTree"
+author: "Group 4 CMSI 533"
+output:
+  pdf_document: default
+date: "2023-04-19"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+        library(latexpdf)
+        library(C50)
+        library(data.table)
+        library(tinytex)
+        
+```
+
+```{r}
+#read in your data
+setwd("/Users/Kevin/Desktop")
+df <- read.csv("creditcard.csv")
+```
+
+```{r}
+set.seed(567)
+int <- sample(1:nrow(df), size = 0.7*nrow(df))
+training_set <- df[int,]
+testing_set <- df[-int,]
+```
+
+```{r}
+training_set$Class <- as.factor(training_set$Class)
+model1 <- C5.0(x=training_set[1:30], y=training_set$Class)
+summary(model1)
+plot(model1)
+```
+<p>
+The model states that V12 is the greatest predictor of credit card fraud, as it provides the most information gain. The next greatest variables are V3, V26, V25, Amount, then Time, in that order. The tree is also organized based on entropy, as lower entropy signifies higher information gain for each variable. 
+</p>

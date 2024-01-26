@@ -1,0 +1,39 @@
+---
+title: "Week 13"
+output: pdf_document
+date: "2023-04-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Load in Packages
+```{r libraries}
+library(stats)
+library(tidyverse)
+```
+#Question 1
+```{r read1}
+stack_df <- read.table("stack.df.csv",header = T, sep = ",")
+```
+# a. generating a summary of the data
+First get the general summary
+```{r}
+summary(stack_df)
+```
+Next get the correlation matrix
+```{r}
+cor(stack_df)
+```
+
+```{r}
+stack.df %>%
+  summarise_all((sd))
+```
+
+```{r}
+q1fit1 <- lm(stack_loss ~ Air_Flow + Water_Temp + Acid_Conc, data = stack_df)
+summary(q1fit1)
+```
+y=B_1*X_1+B_2*X_2+B_3*X_3+E
+One way to interpret it is that we would expect a one unit increase in stack_loss for every 0.7156 unit increase in Air_Flow, 1.2953 unit increase in Water_Temp, or -0.1521 unit decrease in Acid_Conc, and the multivariate linear model is pretty strong given that the R-squared values are approximately 0.9

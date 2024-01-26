@@ -1,0 +1,90 @@
+---
+title: "Finals WatchTower Data"
+output: html_document
+date: "2023-04-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown, First read data
+```{r, read data }
+library(dplyr)
+library(stringr)
+
+# "watchtower_NBCPCONRAPIWT_10.17.101.126\3A8091.csv" is "watchtower 1"
+# "watchtower_NBCPCONRAPIWT_10.17.103.61\3A8091.csv" is "watchtower 2"
+# "watchtower_NBCPCONRAPIWT_10.17.103.125\3A8091.csv" is "watchtower 3"
+
+my_data_one <- read.csv("/Users/salmanalsabah/Desktop/nbc/watchtower1.csv", nrows = 100000, header = TRUE, sep = ",")
+
+my_data_two <- read.csv("/Users/salmanalsabah/Desktop/nbc/watchtower2.csv", nrows = 100000, header = TRUE, sep = ",")
+
+my_data_three <- read.csv("/Users/salmanalsabah/Desktop/nbc/watchtower3.csv", nrows = 100000, header = TRUE, sep = ",")
+
+```
+
+## Clean data 
+```{r,  Clean data }
+# Remove missing values
+my_data_one <- na.omit(my_data_one)
+my_data_two <- na.omit(my_data_two)
+my_data_three <- na.omit(my_data_three)
+
+# Remove duplicates
+my_data_one <- my_data_one[!duplicated(my_data_one),]
+my_data_two <- my_data_two[!duplicated(my_data_two),]
+my_data_three <- my_data_three[!duplicated(my_data_three),]
+```
+
+## Making sense of the data 
+```{r,   Making sense of the data }
+# Extract the show name and watch duration from the "value" column
+my_data_one <- my_data_one %>%
+  mutate(show_name_data_one = str_extract(value, '(?<="showName":")[^"]+'),
+         watch_duration_data_one = as.numeric(str_extract(value, '(?<="watchDuration":)\\d+'))) %>%
+  select(show_name_data_one, watch_duration_data_one)
+
+my_data_two <- my_data_two %>%
+  mutate(show_name_data_two = str_extract(value, '(?<="showName":")[^"]+'),
+         watch_duration_data_two = as.numeric(str_extract(value, '(?<="watchDuration":)\\d+'))) %>%
+  select(show_name_data_two, watch_duration_data_two)
+
+my_data_three <- my_data_three %>%
+  mutate(show_name_data_three = str_extract(value, '(?<="showName":")[^"]+'),
+         watch_duration_data_three = as.numeric(str_extract(value, '(?<="watchDuration":)\\d+'))) %>%
+  select(show_name_data_three, watch_duration_data_three)
+
+# Sum the watch duration for each show
+show_watch_duration_data_one <- my_data_one %>%
+  group_by(show_name_data_one) %>%
+  summarise(total_watch_duration_data_one = sum(watch_duration_data_one)) %>%
+  arrange(desc(total_watch_duration_data_one))
+
+show_watch_duration_data_two <- my_data_two %>%
+  group_by(show_name_data_two) %>%
+  summarise(total_watch_duration_data_two = sum(watch_duration_data_two)) %>%
+  arrange(desc(total_watch_duration_data_two))
+
+show_watch_duration_data_three <- my_data_three %>%
+  group_by(show_name_data_three) %>%
+  summarise(total_watch_duration_data_three = sum(watch_duration_data_three)) %>%
+  arrange(desc(total_watch_duration_data_three))
+
+
+# Print the shows in order of total watch duration
+cat("Shows by total watch duration in data one:\n")
+for (i in seq_along(show_watch_duration_data_one$show_name_data_one)) {
+  cat(sprintf("%2d. %s (%d)\n", i, show_watch_duration_data_one$show_name_data_one[i], show_watch_duration_data_one$total_watch_duration_data_one[i]))}
+  
+cat("Shows by total watch duration in data two:\n")
+for (i in seq_along(show_watch_duration_data_two$show_name_data_two)) {
+  cat(sprintf("%2d. %s (%d)\n", i, show_watch_duration_data_two$show_name_data_two[i], show_watch_duration_data_two$total_watch_duration_data_two[i]))}
+  
+cat("Shows by total watch duration in data three:\n")
+for (i in seq_along(show_watch_duration_data_three$show_name_data_three)) {
+  cat(sprintf("%2d. %s (%d)\n", i, show_watch_duration_data_three$show_name_data_three[i], show_watch_duration_data_three$total_watch_duration_data_three[i])) }
+
+
+```
